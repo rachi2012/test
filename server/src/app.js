@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 const errorHandler = require('./middleware/error');
 
 // Route files
@@ -29,7 +30,9 @@ app.use(cors({
 }));
 
 // Set security headers
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false // Allow inline scripts/styles for React
+}));
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
@@ -50,10 +53,25 @@ app.use('/api/projects', projects);
 app.use('/api/tasks', tasks);
 app.use('/api/dashboard', dashboard);
 
-// Base route
-app.get('/', (req, res) => {
+// Base API route
+app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to Team Task Manager API' });
 });
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, '../../client/dist')));
+
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../client/dist', 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running... please set NODE_ENV to production to serve frontend');
+  });
+}
 
 // Error handler
 app.use(errorHandler);
