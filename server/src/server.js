@@ -1,4 +1,8 @@
 const path = require('path');
+const crypto = require('crypto');
+if (!global.crypto) {
+  global.crypto = crypto.webcrypto || crypto;
+}
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 console.log('Current CWD:', process.cwd());
 console.log('MONGO_URI from process.env:', process.env.MONGO_URI);
