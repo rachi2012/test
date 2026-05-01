@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Briefcase, 
   CheckCircle2, 
@@ -47,16 +48,31 @@ const Dashboard = () => {
     { label: 'Overdue', value: stats?.overdueTasksCount, icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50' },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+  };
+
   return (
-    <div className="space-y-8">
+    <motion.div 
+      className="space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Header */}
-      <div>
+      <motion.div variants={itemVariants}>
         <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
         <p className="text-gray-500">Here's what's happening in your workspace today.</p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {statCards.map((card) => (
           <div key={card.label} className="card p-4 flex flex-col items-center text-center">
             <div className={clsx("w-10 h-10 rounded-lg flex items-center justify-center mb-3", card.bg, card.color)}>
@@ -66,11 +82,11 @@ const Dashboard = () => {
             <p className="text-2xl font-bold text-gray-900 mt-1">{card.value}</p>
           </div>
         ))}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Tasks */}
-        <div className="card">
+        <div className="card glass">
           <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h3 className="font-bold text-gray-900">Recent Tasks</h3>
             <button className="text-sm text-primary-600 font-semibold hover:underline">View All</button>
@@ -102,7 +118,7 @@ const Dashboard = () => {
         </div>
 
         {/* Overdue Tasks */}
-        <div className="card border-red-100">
+        <div className="card border-red-100 glass">
           <div className="px-6 py-4 border-b border-red-50 flex justify-between items-center bg-red-50/50">
             <h3 className="font-bold text-red-900 flex items-center">
               <AlertCircle size={18} className="mr-2" />
@@ -133,8 +149,8 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

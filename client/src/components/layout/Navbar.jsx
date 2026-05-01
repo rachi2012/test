@@ -5,7 +5,7 @@ const Navbar = ({ toggleSidebar }) => {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 bg-white border-b border-gray-100 lg:px-8">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-6 border-b border-gray-100 lg:px-8 glass">
       <div className="flex items-center">
         <button
           onClick={toggleSidebar}
@@ -13,7 +13,7 @@ const Navbar = ({ toggleSidebar }) => {
         >
           <Menu size={20} />
         </button>
-        <h1 className="ml-4 text-lg font-semibold text-gray-900 lg:ml-0">
+        <h1 className="ml-4 text-lg font-semibold text-gray-900 lg:ml-0 truncate max-w-[150px] sm:max-w-none">
           Welcome back, {user?.name}
         </h1>
       </div>

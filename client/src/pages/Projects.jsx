@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Plus, Search, MoreVertical, Trash2, Edit2, Users, Briefcase } from 'lucide-react';
 import projectService from '../services/project.service';
 import userService from '../services/user.service';
@@ -83,9 +84,24 @@ const Projects = () => {
     setIsModalOpen(true);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <motion.div 
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
           <p className="text-gray-500">Manage your team's projects and members.</p>
@@ -103,14 +119,14 @@ const Projects = () => {
             New Project
           </button>
         )}
-      </div>
+      </motion.div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
+        <motion.div variants={itemVariants} className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        </motion.div>
       ) : projects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
             <div key={project._id} className="card flex flex-col group">
               <div className="p-6 flex-1">
@@ -171,9 +187,9 @@ const Projects = () => {
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
       ) : (
-        <div className="card p-12 text-center flex flex-col items-center">
+        <motion.div variants={itemVariants} className="card p-12 text-center flex flex-col items-center">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
             <Briefcase className="text-gray-300" size={32} />
           </div>
@@ -181,20 +197,20 @@ const Projects = () => {
           <p className="text-gray-500 mt-1">
             {isAdmin ? 'Get started by creating your first project.' : 'Please contact your admin to assign you a project.'}
           </p>
-        </div>
+        </motion.div>
       )}
 
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200">
-            <form onSubmit={handleSubmit}>
-              <div className="px-6 py-4 border-b border-gray-100">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+            <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 shrink-0">
                 <h3 className="text-lg font-bold text-gray-900">
                   {selectedProject ? 'Edit Project' : 'New Project'}
                 </h3>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
                 <div>
                   <label className="label">Project Title</label>
                   <input
@@ -255,7 +271,7 @@ const Projects = () => {
                   </div>
                 </div>
               </div>
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 rounded-b-2xl">
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 rounded-b-2xl shrink-0">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
@@ -271,7 +287,7 @@ const Projects = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

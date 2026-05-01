@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Plus, 
   Search, 
@@ -151,9 +152,24 @@ const Tasks = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <motion.div 
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
           <p className="text-gray-500">Track and manage project tasks.</p>
@@ -179,10 +195,10 @@ const Tasks = () => {
             New Task
           </button>
         )}
-      </div>
+      </motion.div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm glass">
         <select 
           className="input"
           value={filters.project}
@@ -211,14 +227,14 @@ const Tasks = () => {
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-      </div>
+      </motion.div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
+        <motion.div variants={itemVariants} className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
+        </motion.div>
       ) : tasks.length > 0 ? (
-        <div className="card overflow-hidden">
+        <motion.div variants={itemVariants} className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -319,110 +335,113 @@ const Tasks = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <div className="card p-12 text-center flex flex-col items-center">
+        <motion.div variants={itemVariants} className="card p-12 text-center flex flex-col items-center">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
             <CheckCircle2 className="text-gray-300" size={32} />
           </div>
           <h3 className="text-lg font-medium text-gray-900">No tasks found</h3>
           <p className="text-gray-500 mt-1">Refine your filters or create a new task.</p>
-        </div>
+        </motion.div>
       )}
 
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl animate-in zoom-in-95 duration-200">
-            <form onSubmit={handleSubmit}>
-              <div className="px-6 py-4 border-b border-gray-100">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+            <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 shrink-0">
                 <h3 className="text-lg font-bold text-gray-900">
                   {selectedTask ? 'Edit Task' : 'New Task'}
                 </h3>
               </div>
-              <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2">
+              <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
+                <div>
                   <label className="label">Task Title</label>
                   <input
                     className="input"
-                    placeholder="e.g., Design Landing Page"
+                    placeholder="Enter task name"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
                   />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className="label">Description</label>
                   <textarea
                     className="input h-24 resize-none"
-                    placeholder="Task details..."
+                    placeholder="What needs to be done?"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    required
                   ></textarea>
                 </div>
-                <div>
-                  <label className="label">Project</label>
-                  <select
-                    className="input"
-                    value={formData.project}
-                    onChange={(e) => setFormData({ ...formData, project: e.target.value })}
-                    required
-                  >
-                    <option value="" disabled>Select Project</option>
-                    {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
-                  </select>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="label">Project</label>
+                    <select
+                      className="input"
+                      value={formData.project}
+                      onChange={(e) => setFormData({ ...formData, project: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Project</option>
+                      {projects.map(p => <option key={p._id} value={p._id}>{p.title}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Assign To</label>
+                    <select
+                      className="input"
+                      value={formData.assignedTo}
+                      onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Member</option>
+                      {members.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="label">Assign To</label>
-                  <select
-                    className="input"
-                    value={formData.assignedTo}
-                    onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                    required
-                  >
-                    <option value="" disabled>Select Member</option>
-                    {/* Add Admin to assignment list too */}
-                    <option value={user.id}>Me (Admin)</option>
-                    {members.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Priority</label>
-                  <select
-                    className="input"
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Status</label>
-                  <select
-                    className="input"
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  >
-                    <option value="todo">Todo</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="label">Due Date</label>
-                  <input
-                    type="date"
-                    className="input"
-                    value={formData.dueDate}
-                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    required
-                  />
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="label">Priority</label>
+                    <select
+                      className="input"
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Status</label>
+                    <select
+                      className="input"
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    >
+                      <option value="todo">Todo</option>
+                      <option value="in-progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Due Date</label>
+                    <input
+                      type="date"
+                      className="input"
+                      value={formData.dueDate}
+                      onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 rounded-b-2xl">
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 rounded-b-2xl shrink-0">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
@@ -438,7 +457,7 @@ const Tasks = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
